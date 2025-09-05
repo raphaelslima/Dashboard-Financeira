@@ -10,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 
 const SingupPage = () => {
@@ -26,6 +27,15 @@ const SingupPage = () => {
           <Input placeholder="Digite seu email" />
           <PasswordInput />
           <PasswordInput placeholder="Digite sua senha novamente" />
+          <div className="flex items-center gap-3">
+            <Checkbox id="terms" className="border-gray-400" />
+            <label
+              htmlFor="terms"
+              className="peer-disabled: text-sm font-medium leading-none peer-disabled:cursor-not-allowed"
+            >
+              Accept terms and conditions
+            </label>
+          </div>
         </CardContent>
         <CardFooter>
           <Button className="w-full">Criar conta</Button>
