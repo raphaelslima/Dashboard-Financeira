@@ -182,7 +182,7 @@ const SingupPage = () => {
         </form>
       </Form>
       <div className="flex items-center justify-center">
-        <p className="text-center opacity-50">Já possui uma conta </p>
+        <p className="text-center opacity-50">Já possui uma conta?</p>
         <Button variant="link" asChild>
           <Link to={'/login'}>Faça login</Link>
         </Button>
