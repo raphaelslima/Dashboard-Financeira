@@ -52,7 +52,7 @@ const singupSchema = z.object({
 })
 
 const SingupPage = () => {
-  const methods = useForm({
+  const form = useForm({
     resolver: zodResolver(singupSchema),
     defaultValues: {
       firstName: '',
@@ -70,8 +70,8 @@ const SingupPage = () => {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-start gap-3 py-10">
-      <Form {...methods}>
-        <form onSubmit={methods.handleSubmit(handleSubmit)}>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleSubmit)}>
           <Card className="w-[500px]">
             <CardHeader>
               <CardTitle>Crie a sua conta</CardTitle>
@@ -79,7 +79,7 @@ const SingupPage = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <FormField
-                control={methods.control}
+                control={form.control}
                 name="firstName"
                 render={({ field }) => (
                   <FormItem>
@@ -96,7 +96,7 @@ const SingupPage = () => {
               />
 
               <FormField
-                control={methods.control}
+                control={form.control}
                 name="lastName"
                 render={({ field }) => (
                   <FormItem>
@@ -110,7 +110,7 @@ const SingupPage = () => {
               />
 
               <FormField
-                control={methods.control}
+                control={form.control}
                 name="email"
                 render={({ field }) => (
                   <FormItem>
@@ -124,7 +124,7 @@ const SingupPage = () => {
               />
 
               <FormField
-                control={methods.control}
+                control={form.control}
                 name="password"
                 render={({ field }) => (
                   <FormItem>
@@ -138,7 +138,7 @@ const SingupPage = () => {
               />
 
               <FormField
-                control={methods.control}
+                control={form.control}
                 name="passwordConfirmation"
                 render={({ field }) => (
                   <FormItem>
@@ -155,7 +155,7 @@ const SingupPage = () => {
               />
 
               <FormField
-                control={methods.control}
+                control={form.control}
                 name="terms"
                 render={({ field }) => (
                   <FormItem>
