@@ -1,6 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation } from '@tanstack/react-query'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router'
+import { toast } from 'sonner'
 import { z } from 'zod'
 
 import PasswordInput from '@/components/password-input'
@@ -23,12 +26,13 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { api } from '@/lib/axios'
 
 const singupSchema = z.object({
-  firstName: z.string().trim().min(1, {
+  first_name: z.string().trim().min(1, {
     message: 'O nome é obrigatório.',
   }),
-  lastName: z.string().trim().min(1, {
+  last_name: z.string().trim().min(1, {
     message: 'O sobrenome é obrigatório.',
   }),
   email: z
@@ -52,11 +56,19 @@ const singupSchema = z.object({
 })
 
 const SingupPage = () => {
+  const [user, setUser] = useState(null)
+  const singupmutation = useMutation({
+    mutationKey: ['singup'],
+    mutationFn: async (data) => {
+      const responseApi = await api.post('/users', data)
+      return responseApi.data
+    },
+  })
   const form = useForm({
     resolver: zodResolver(singupSchema),
     defaultValues: {
-      firstName: '',
-      lastName: '',
+      first_name: '',
+      last_name: '',
       email: '',
       password: '',
       passwordConfirmation: '',
@@ -65,7 +77,23 @@ const SingupPage = () => {
   })
 
   const handleSubmit = (data) => {
-    console.log(data)
+    singupmutation.mutate(data, {
+      onSuccess: (apiResponse) => {
+        const acessToken = apiResponse.tokens.accessToken
+        const refreshToken = apiResponse.tokens.refreshToken
+        setUser(apiResponse)
+        localStorage.setItem('acessToken', acessToken)
+        localStorage.setItem('refreshToken', refreshToken)
+        toast.success('Conta criada com sucesso.')
+      },
+      onError: () => {
+        toast.error('Erro ao criar a conta.')
+      },
+    })
+  }
+
+  if (user) {
+    return <h1>{user.first_name}</h1>
   }
 
   return (
@@ -80,7 +108,7 @@ const SingupPage = () => {
             <CardContent className="space-y-4">
               <FormField
                 control={form.control}
-                name="firstName"
+                name="first_name"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Primeiro nome</FormLabel>
@@ -97,7 +125,7 @@ const SingupPage = () => {
 
               <FormField
                 control={form.control}
-                name="lastName"
+                name="last_name"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Sobrenome</FormLabel>
