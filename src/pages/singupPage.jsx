@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useContext } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router'
 import { z } from 'zod'
@@ -24,7 +23,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { AuthConext } from '@/context/auth'
+import { useAuthContext } from '@/context/auth'
 
 const singupSchema = z
   .object({
@@ -64,7 +63,7 @@ const singupSchema = z
   )
 
 const SingupPage = () => {
-  const { user, singup } = useContext(AuthConext)
+  const { user, singup } = useAuthContext()
 
   const form = useForm({
     resolver: zodResolver(singupSchema),
