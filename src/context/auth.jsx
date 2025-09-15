@@ -37,6 +37,33 @@ export const AuthConextProvider = ({ children }) => {
     })
   }
 
+  const loginMutation = useMutation({
+    mutationKey: ['login'],
+    mutationFn: async (data) => {
+      const response = await api.post('/users/login', {
+        email: data.email,
+        password: data.password,
+      })
+      return response.data
+    },
+  })
+
+  const login = (data) => {
+    loginMutation.mutate(data, {
+      onSuccess: (apiResponse) => {
+        const acessToken = apiResponse.tokens.accessToken
+        const refreshToken = apiResponse.tokens.refreshToken
+        setUser(apiResponse)
+        localStorage.setItem('acessToken', acessToken)
+        localStorage.setItem('refreshToken', refreshToken)
+        toast.success('Login realizado com sucesso.')
+      },
+      onError: () => {
+        toast.error('Erro ao realizar login.')
+      },
+    })
+  }
+
   useEffect(() => {
     const init = async () => {
       try {
@@ -60,9 +87,7 @@ export const AuthConextProvider = ({ children }) => {
   }, [])
 
   return (
-    <AuthConext.Provider
-      value={{ user: user, login: () => {}, singup: singup }}
-    >
+    <AuthConext.Provider value={{ user: user, login: login, singup: singup }}>
       {children}
     </AuthConext.Provider>
   )
