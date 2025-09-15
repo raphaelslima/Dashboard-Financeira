@@ -1,9 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
+import { useContext } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router'
-import { toast } from 'sonner'
 import { z } from 'zod'
 
 import PasswordInput from '@/components/password-input'
@@ -26,7 +24,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { api } from '@/lib/axios'
+import { AuthConext } from '@/context/auth'
 
 const singupSchema = z
   .object({
@@ -66,14 +64,8 @@ const singupSchema = z
   )
 
 const SingupPage = () => {
-  const [user, setUser] = useState(null)
-  const singupmutation = useMutation({
-    mutationKey: ['singup'],
-    mutationFn: async (data) => {
-      const responseApi = await api.post('/users', data)
-      return responseApi.data
-    },
-  })
+  const { user, singup } = useContext(AuthConext)
+
   const form = useForm({
     resolver: zodResolver(singupSchema),
     defaultValues: {
@@ -86,43 +78,7 @@ const SingupPage = () => {
     },
   })
 
-  useEffect(() => {
-    const init = async () => {
-      try {
-        const acessToken = localStorage.getItem('acessToken')
-        const refreshToken = localStorage.getItem('refreshToken')
-
-        if (!acessToken && !refreshToken) return
-
-        const response = await api.get('/users/me', {
-          headers: {
-            Authorization: `Bearer ${acessToken}`,
-          },
-        })
-        setUser(response.data)
-      } catch (error) {
-        localStorage.removeItem('acessToken')
-        console.log(error)
-      }
-    }
-    init()
-  }, [])
-
-  const handleSubmit = (data) => {
-    singupmutation.mutate(data, {
-      onSuccess: (apiResponse) => {
-        const acessToken = apiResponse.tokens.accessToken
-        const refreshToken = apiResponse.tokens.refreshToken
-        setUser(apiResponse)
-        localStorage.setItem('acessToken', acessToken)
-        localStorage.setItem('refreshToken', refreshToken)
-        toast.success('Conta criada com sucesso.')
-      },
-      onError: () => {
-        toast.error('Erro ao criar a conta.')
-      },
-    })
-  }
+  const handleSubmit = (data) => singup(data)
 
   if (user) {
     return <h1>{user.first_name}</h1>
