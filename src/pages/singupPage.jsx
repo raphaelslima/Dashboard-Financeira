@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router'
 import { toast } from 'sonner'
@@ -85,6 +85,28 @@ const SingupPage = () => {
       terms: false,
     },
   })
+
+  useEffect(() => {
+    const init = async () => {
+      try {
+        const acessToken = localStorage.getItem('acessToken')
+        const refreshToken = localStorage.getItem('refreshToken')
+
+        if (!acessToken && !refreshToken) return
+
+        const response = await api.get('/users/me', {
+          headers: {
+            Authorization: `Bearer ${acessToken}`,
+          },
+        })
+        setUser(response.data)
+      } catch (error) {
+        localStorage.removeItem('acessToken')
+        console.log(error)
+      }
+    }
+    init()
+  }, [])
 
   const handleSubmit = (data) => {
     singupmutation.mutate(data, {
