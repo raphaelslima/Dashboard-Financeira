@@ -9,6 +9,7 @@ export const AuthConext = createContext({
   isInitializing: true,
   login: () => {},
   singup: () => {},
+  singOut: () => {},
 })
 
 export const useAuthContext = () => useContext(AuthConext)
@@ -75,6 +76,11 @@ export const AuthConextProvider = ({ children }) => {
     })
   }
 
+  const singOut = () => {
+    setUser(null)
+    setIsInitializing(null)
+  }
+
   useEffect(() => {
     const init = async () => {
       try {
@@ -108,6 +114,7 @@ export const AuthConextProvider = ({ children }) => {
         isInitializing,
         login,
         singup,
+        singOut,
       }}
     >
       {children}
