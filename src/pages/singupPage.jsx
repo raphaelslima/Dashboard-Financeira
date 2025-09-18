@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { Link } from 'react-router'
+import { Link, Navigate } from 'react-router'
 import { z } from 'zod'
 
 import PasswordInput from '@/components/password-input'
@@ -63,7 +63,7 @@ const singupSchema = z
   )
 
 const SingupPage = () => {
-  const { user, singup } = useAuthContext()
+  const { user, singup, isInitializing } = useAuthContext()
 
   const form = useForm({
     resolver: zodResolver(singupSchema),
@@ -79,8 +79,10 @@ const SingupPage = () => {
 
   const handleSubmit = (data) => singup(data)
 
+  if (isInitializing) return null
+
   if (user) {
-    return <h1>{user.first_name}</h1>
+    return <Navigate to="/" />
   }
 
   return (
