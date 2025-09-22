@@ -1,4 +1,4 @@
-import { publicApi } from '@/lib/axios'
+import { protectApi, publicApi } from '@/lib/axios'
 
 export const userServices = {
   singup: async (data) => {
@@ -11,6 +11,11 @@ export const userServices = {
       email: data.email,
       password: data.password,
     })
+    return response.data
+  },
+
+  me: async () => {
+    const response = await protectApi.get('/users/me')
     return response.data
   },
 }
