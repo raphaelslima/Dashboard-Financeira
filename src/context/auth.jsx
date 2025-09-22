@@ -6,7 +6,7 @@ import {
   LOCAL_STORAGE_ACCESS_TOKEN,
   LOCAL_STORAGE_REFRESH_TOKEN,
 } from '@/constants/localStorage'
-import { protectApi, publicApi } from '@/lib/axios'
+import { protectApi } from '@/lib/axios'
 import { userServices } from '@/services/user'
 
 export const AuthConext = createContext({
@@ -57,11 +57,8 @@ export const AuthConextProvider = ({ children }) => {
   const loginMutation = useMutation({
     mutationKey: ['login'],
     mutationFn: async (data) => {
-      const response = await publicApi.post('/users/login', {
-        email: data.email,
-        password: data.password,
-      })
-      return response.data
+      const response = await userServices.login(data)
+      return response
     },
   })
 

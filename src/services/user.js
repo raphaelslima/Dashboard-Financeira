@@ -5,4 +5,12 @@ export const userServices = {
     const response = await publicApi.post('/users', data)
     return response.data
   },
+
+  login: async (data) => {
+    const response = await publicApi.post('/users/login', {
+      email: data.email,
+      password: data.password,
+    })
+    return response.data
+  },
 }
