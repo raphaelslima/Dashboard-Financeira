@@ -7,6 +7,7 @@ import {
   LOCAL_STORAGE_REFRESH_TOKEN,
 } from '@/constants/localStorage'
 import { protectApi, publicApi } from '@/lib/axios'
+import { userServices } from '@/services/user'
 
 export const AuthConext = createContext({
   user: null,
@@ -35,8 +36,8 @@ export const AuthConextProvider = ({ children }) => {
   const singupmutation = useMutation({
     mutationKey: ['singup'],
     mutationFn: async (data) => {
-      const responseApi = await publicApi.post('/users', data)
-      return responseApi.data
+      const responseApi = await userServices.singup(data)
+      return responseApi
     },
   })
 
