@@ -1,6 +1,6 @@
 import { addMonths, format } from 'date-fns'
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router'
+import { useNavigate, useSearchParams } from 'react-router'
 
 import DatePickerWithRanger from './DatePickerWithRanger'
 
@@ -9,14 +9,19 @@ const formatDate = (date) => {
 }
 
 const DateSeletor = () => {
+  const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const [date, setDate] = useState({
-    from: new Date(),
-    to: addMonths(new Date(), 1),
+    from: searchParams.get('from')
+      ? new Date(searchParams.get('from') + 'T00:00:00')
+      : new Date(),
+    to: searchParams.get('to')
+      ? new Date(searchParams.get('to') + 'T00:00:00')
+      : addMonths(new Date(), 1),
   })
 
   useEffect(() => {
-    if (!date.from && !date.to) return
+    if (!date.from || !date.to) return
 
     const queryParams = new URLSearchParams()
     queryParams.set('from', formatDate(date.from))
