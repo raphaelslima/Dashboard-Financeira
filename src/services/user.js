@@ -18,4 +18,12 @@ export const userServices = {
     const response = await protectApi.get('/users/me')
     return response.data
   },
+
+  getBalance: async (input) => {
+    const queryParams = new URLSearchParams()
+    queryParams.set('from', input.from)
+    queryParams.set('to', input.to)
+    const response = await protectApi.get(`/users/me/balance?${queryParams}`)
+    return response.data
+  },
 }
