@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 
 import { userServices } from '@/api/services/user'
 import { useAuthContext } from '@/context/auth'
@@ -17,5 +17,29 @@ export const useGetUserBalance = ({ from, to }) => {
       return userServices.getBalance({ from, to })
     },
     enabled: Boolean(from) && Boolean(to) && Boolean(user.id),
+  })
+}
+
+export const getSingUpQueryKey = () => ['singup']
+
+export const useSingUp = () => {
+  return useMutation({
+    mutationKey: getSingUpQueryKey(),
+    mutationFn: async (data) => {
+      const responseApi = await userServices.singup(data)
+      return responseApi
+    },
+  })
+}
+
+export const getLoginQueryKey = () => ['login']
+
+export const useLogin = () => {
+  return useMutation({
+    mutationKey: getLoginQueryKey(),
+    mutationFn: async (data) => {
+      const response = await userServices.login(data)
+      return response
+    },
   })
 }
