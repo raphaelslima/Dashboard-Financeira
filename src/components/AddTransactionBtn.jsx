@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { DialogClose } from '@radix-ui/react-dialog'
 import {
   PiggyBank,
   PlusIcon,
@@ -7,11 +6,11 @@ import {
   TrendingUpIcon,
 } from 'lucide-react'
 import { useForm } from 'react-hook-form'
-import { NumericFormat } from 'react-number-format'
 import z from 'zod'
 
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -20,6 +19,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 
+import NumericInput from './NumericInput'
 import { Button } from './ui/button'
 import DatePicker from './ui/datePicker'
 import {
@@ -101,18 +101,13 @@ const AddTransactionBtn = () => {
                   <FormItem>
                     <FormLabel>Valor:</FormLabel>
                     <FormControl>
-                      <NumericFormat
-                        placeholder="Digite o valor da transação"
+                      <NumericInput
+                        {...field}
+                        placeholder="R$ 0,00"
                         thousandSeparator="."
                         decimalSeparator=","
                         prefix="R$ "
                         allowNegative={false}
-                        customInput={Input}
-                        {...field}
-                        onValueChange={(values) =>
-                          field.onChange(values.floatValue)
-                        }
-                        onChange={() => {}}
                       />
                     </FormControl>
                     <FormMessage />
