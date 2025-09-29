@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query'
-import { addMonths, format } from 'date-fns'
+import { addMonths, format, isValid } from 'date-fns'
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router'
 
@@ -7,8 +7,26 @@ import { useAuthContext } from '@/context/auth'
 
 import DatePickerWithRanger from './DatePickerWithRanger'
 
-const formatDate = (date) => {
-  return format(date, 'yyyy-MM-dd')
+const formatDate = (date) => format(date, 'yyyy-MM-dd')
+
+const getInitialDateState = (searchParams) => {
+  const from = searchParams.get('from')
+  const to = searchParams.get('to')
+
+  const defaultDates = {
+    from: new Date(),
+    to: addMonths(new Date(), 1),
+  }
+
+  if (!from || !to) return defaultDates
+
+  const dateAreInvalid = !isValid(new Date(from)) || !isValid(new Date(from))
+  if (dateAreInvalid) return defaultDates
+
+  return {
+    from: new Date(from + 'T00:00:00'),
+    to: new Date(to + 'T00:00:00'),
+  }
 }
 
 const DateSeletor = () => {
@@ -16,14 +34,7 @@ const DateSeletor = () => {
   const queryClient = useQueryClient()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
-  const [date, setDate] = useState({
-    from: searchParams.get('from')
-      ? new Date(searchParams.get('from') + 'T00:00:00')
-      : new Date(),
-    to: searchParams.get('to')
-      ? new Date(searchParams.get('to') + 'T00:00:00')
-      : addMonths(new Date(), 1),
-  })
+  const [date, setDate] = useState(getInitialDateState(searchParams))
 
   useEffect(() => {
     if (!date.from || !date.to) return
