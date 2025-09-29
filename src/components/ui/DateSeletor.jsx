@@ -3,6 +3,7 @@ import { addMonths, format, isValid } from 'date-fns'
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router'
 
+import { getUserBalanceQueryKey } from '@/api/hooks/user'
 import { useAuthContext } from '@/context/auth'
 
 import DatePickerWithRanger from './DatePickerWithRanger'
@@ -45,12 +46,11 @@ const DateSeletor = () => {
 
     navigate(`/?${queryParams.toString()}`)
     queryClient.invalidateQueries({
-      queryKey: [
-        'balance',
+      queryKey: getUserBalanceQueryKey(
         user.id,
         formatDate(date.from),
-        formatDate(date.to),
-      ],
+        formatDate(date.to)
+      ),
     })
   }, [navigate, date, user, queryClient])
 
