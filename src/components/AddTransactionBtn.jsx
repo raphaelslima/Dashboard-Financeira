@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   Loader2,
   PiggyBank,
@@ -10,10 +9,9 @@ import {
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useSearchParams } from 'react-router'
-import { toast } from 'sonner'
 import z from 'zod'
 
-import { transactionService } from '@/api/services/transaction'
+import { useCreateTransaction } from '@/api/hooks/transaction'
 import {
   Dialog,
   DialogClose,
@@ -24,7 +22,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { useAuthContext } from '@/context/auth'
 
 import NumericInput from './NumericInput'
 import { Button } from './ui/button'
@@ -55,26 +52,12 @@ const formSchema = z.object({
 })
 
 const AddTransactionBtn = () => {
-  const { user } = useAuthContext()
   const [searchParams] = useSearchParams()
   const from = searchParams.get('from')
   const to = searchParams.get('to')
-  const queryClient = useQueryClient()
-  const { mutateAsync, isPending } = useMutation({
-    mutationKey: ['createTransaction'],
-    mutationFn: (input) => transactionService.create(input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['balance', user.id, from, to],
-      })
-      setIsDialogOpen(false)
-      toast.success('Transação criada com sucesso')
-    },
-    onError: () => {
-      toast.error('Transação inválida.')
-    },
-  })
   const [ísDialoogOpen, setIsDialogOpen] = useState(false)
+
+  const { mutateAsync, isPending } = useCreateTransaction(from, to)
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -88,7 +71,11 @@ const AddTransactionBtn = () => {
 
   const onSubmit = async (data) => {
     try {
-      await mutateAsync(data)
+      await mutateAsync(data, {
+        onSuccess: () => {
+          setIsDialogOpen(false)
+        },
+      })
     } catch (error) {
       console.log(error)
     }
