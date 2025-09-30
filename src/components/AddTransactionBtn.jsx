@@ -1,4 +1,4 @@
-import { zodResolver } from '@hookform/resolvers/zod'
+import { addMonths } from 'date-fns'
 import {
   Loader2,
   PiggyBank,
@@ -7,9 +7,7 @@ import {
   TrendingUpIcon,
 } from 'lucide-react'
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
 import { useSearchParams } from 'react-router'
-import z from 'zod'
 
 import { useCreateTransaction } from '@/api/hooks/transaction'
 import {
@@ -22,6 +20,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import { useCreateTransactionForm } from '@/forms/hooks/transaction'
 
 import NumericInput from './NumericInput'
 import { Button } from './ui/button'
@@ -36,38 +35,17 @@ import {
 } from './ui/form'
 import { Input } from './ui/input'
 
-const formSchema = z.object({
-  name: z.string().trim().min(1, {
-    message: 'O campo é obrigatório.',
-  }),
-  amount: z.number({
-    required_error: 'O campo é obrigatório',
-  }),
-  date: z.date({
-    required_error: 'O campo é obrigatório',
-  }),
-  type: z.enum(['EARNING', 'INVESTMENT', 'EXPENSE'], {
-    message: 'O campo é obrigatório',
-  }),
-})
-
 const AddTransactionBtn = () => {
   const [searchParams] = useSearchParams()
   const from = searchParams.get('from')
   const to = searchParams.get('to')
   const [ísDialoogOpen, setIsDialogOpen] = useState(false)
 
-  const { mutateAsync, isPending } = useCreateTransaction(from, to)
-  const form = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: '',
-      amount: 0,
-      date: new Date(),
-      type: 'EARNING',
-    },
-    shouldUnregister: true,
-  })
+  const { mutateAsync, isPending } = useCreateTransaction(
+    from ? from : new Date(),
+    to ? to : addMonths(new Date(), 1)
+  )
+  const form = useCreateTransactionForm()
 
   const onSubmit = async (data) => {
     try {
