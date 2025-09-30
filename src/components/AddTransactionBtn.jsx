@@ -1,13 +1,19 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
+  Loader2,
   PiggyBank,
   PlusIcon,
   TrendingDownIcon,
   TrendingUpIcon,
 } from 'lucide-react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { useSearchParams } from 'react-router'
+import { toast } from 'sonner'
 import z from 'zod'
 
+import { transactionService } from '@/api/services/transaction'
 import {
   Dialog,
   DialogClose,
@@ -18,6 +24,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import { useAuthContext } from '@/context/auth'
 
 import NumericInput from './NumericInput'
 import { Button } from './ui/button'
@@ -48,6 +55,26 @@ const formSchema = z.object({
 })
 
 const AddTransactionBtn = () => {
+  const { user } = useAuthContext()
+  const [searchParams] = useSearchParams()
+  const from = searchParams.get('from')
+  const to = searchParams.get('to')
+  const queryClient = useQueryClient()
+  const { mutateAsync, isPending } = useMutation({
+    mutationKey: ['createTransaction'],
+    mutationFn: (input) => transactionService.create(input),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['balance', user.id, from, to],
+      })
+      setIsDialogOpen(false)
+      toast.success('Transação criada com sucesso')
+    },
+    onError: () => {
+      toast.error('Transação inválida.')
+    },
+  })
+  const [ísDialoogOpen, setIsDialogOpen] = useState(false)
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -59,12 +86,17 @@ const AddTransactionBtn = () => {
     shouldUnregister: true,
   })
 
-  function onSubmit(data) {
-    console.log(data)
+  const onSubmit = async (data) => {
+    try {
+      await mutateAsync(data)
+    } catch (error) {
+      console.log(error)
+    }
   }
+
   return (
     <>
-      <Dialog>
+      <Dialog open={ísDialoogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>
           <Button>
             {' '}
@@ -175,12 +207,21 @@ const AddTransactionBtn = () => {
               />
               <DialogFooter className={'sm:space-x-4'}>
                 <DialogClose asChild>
-                  <Button type="reset" variant="secondary" className="w-full">
+                  <Button
+                    type="reset"
+                    variant="secondary"
+                    className="w-full"
+                    disabled={isPending}
+                  >
                     Cancelar
                   </Button>
                 </DialogClose>
-                <Button type="submit" className="w-full">
-                  Adcionar
+                <Button type="submit" className="w-full" disabled={isPending}>
+                  {isPending ? (
+                    <Loader2 className="animate-spin" />
+                  ) : (
+                    'Adicionar'
+                  )}
                 </Button>
               </DialogFooter>
             </form>
