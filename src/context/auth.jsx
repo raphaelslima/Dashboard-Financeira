@@ -49,8 +49,8 @@ export const AuthConextProvider = ({ children }) => {
 
   const loginMutation = useLogin()
 
-  const login = (data) => {
-    loginMutation.mutate(data, {
+  const login = async (data) => {
+    await loginMutation.mutateAsync(data, {
       onSuccess: (apiResponse) => {
         setTokens(apiResponse.tokens)
         setUser(apiResponse)

@@ -1,7 +1,5 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
+import { Loader2Icon } from 'lucide-react'
 import { Link, Navigate } from 'react-router'
-import z from 'zod'
 
 import PasswordInput from '@/components/password-input'
 import { Button } from '@/components/ui/button'
@@ -23,32 +21,12 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useAuthContext } from '@/context/auth'
+import { useLoginForm } from '@/forms/hooks/login'
 
 const LoginPage = () => {
   const { user, login, isInitializing } = useAuthContext()
 
-  const loginschema = z.object({
-    email: z
-      .string()
-      .email({
-        message: 'O email é inválido.',
-      })
-      .trim()
-      .min(1, {
-        message: 'O email é obrigatório.',
-      }),
-    password: z.string().min(6, {
-      message: 'Senha precisa ter 6 caracteres',
-    }),
-  })
-
-  const form = useForm({
-    resolver: zodResolver(loginschema),
-    defaultValues: {
-      email: '',
-      password: '',
-    },
-  })
+  const { form } = useLoginForm()
 
   const handleSubmit = (data) => login(data)
 
@@ -99,7 +77,9 @@ const LoginPage = () => {
               />
             </CardContent>
             <CardFooter>
-              <Button className="w-full">Entrar</Button>
+              <Button className="w-full" disabled={form.formState.isSubmitting}>
+                {form.formState.isSubmitting ? <Loader2Icon /> : 'Enviar'}
+              </Button>
             </CardFooter>
           </Card>
         </form>
