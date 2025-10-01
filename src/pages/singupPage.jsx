@@ -1,7 +1,5 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
+import { Loader2Icon } from 'lucide-react'
 import { Link, Navigate } from 'react-router'
-import { z } from 'zod'
 
 import PasswordInput from '@/components/password-input'
 import { Button } from '@/components/ui/button'
@@ -24,58 +22,12 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useAuthContext } from '@/context/auth'
-
-const singupSchema = z
-  .object({
-    first_name: z.string().trim().min(1, {
-      message: 'O nome é obrigatório.',
-    }),
-    last_name: z.string().trim().min(1, {
-      message: 'O sobrenome é obrigatório.',
-    }),
-    email: z
-      .string()
-      .email({
-        message: 'O email é inválido',
-      })
-      .trim()
-      .min(1, {
-        message: 'O nome é obrigatório.',
-      }),
-    password: z.string().trim().min(6, {
-      message: 'A senha precisa ter no mínimo 6 caracteres.',
-    }),
-    passwordConfirmation: z.string().trim().min(6, {
-      message: 'Confirmação de senha é obrigatória.',
-    }),
-    terms: z.boolean().refine((value) => value === true, {
-      message: 'Aceite os termos para efetuar o cadastro.',
-    }),
-  })
-  .refine(
-    (data) => {
-      return data.password === data.passwordConfirmation
-    },
-    {
-      message: 'As senhas não coincidem',
-      path: ['passwordConfirmation'],
-    }
-  )
+import { useSignupForm } from '@/forms/hooks/singup'
 
 const SingupPage = () => {
   const { user, singup, isInitializing } = useAuthContext()
 
-  const form = useForm({
-    resolver: zodResolver(singupSchema),
-    defaultValues: {
-      first_name: '',
-      last_name: '',
-      email: '',
-      password: '',
-      passwordConfirmation: '',
-      terms: false,
-    },
-  })
+  const form = useSignupForm()
 
   const handleSubmit = (data) => singup(data)
 
@@ -193,7 +145,9 @@ const SingupPage = () => {
               />
             </CardContent>
             <CardFooter>
-              <Button className="w-full">Criar conta</Button>
+              <Button className="w-full" disabled={form.formState.isSubmitting}>
+                {form.formState.isSubmitted ? <Loader2Icon /> : 'Criar conta'}
+              </Button>
             </CardFooter>
           </Card>
         </form>
