@@ -3,6 +3,7 @@ import { Navigate } from 'react-router'
 import AddTransactionBtn from '@/components/AddTransactionBtn'
 import Balance from '@/components/Balance'
 import Header from '@/components/Header'
+import TransactionTable from '@/components/TransactionTable'
 import DateSeletor from '@/components/ui/DateSeletor'
 import { useAuthContext } from '@/context/auth'
 
@@ -29,6 +30,7 @@ const HomePage = () => {
         <div className="grid grid-cols-[2fr,1fr]">
           <Balance />
         </div>
+        <TransactionTable />
       </div>
     </>
   )

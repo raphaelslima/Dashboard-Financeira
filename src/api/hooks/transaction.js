@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 import { useAuthContext } from '@/context/auth'
@@ -7,6 +7,11 @@ import { transactionService } from '../services/transaction'
 import { getUserBalanceQueryKey } from './user'
 
 export const getCreateTransactionMutationQueryKey = () => ['createTransaction']
+
+export const getTransactionsQueryKey = (userId, from, to) => {
+  if (!from || !to) return ['transactions', userId]
+  return ['transactions', userId, from, to]
+}
 
 export const useCreateTransaction = ({ from, to }) => {
   const queryClient = useQueryClient()
@@ -19,9 +24,19 @@ export const useCreateTransaction = ({ from, to }) => {
         queryKey: getUserBalanceQueryKey(user.id, from, to),
       })
       toast.success('Transação criada com sucesso')
+      queryClient.invalidateQueries(getTransactionsQueryKey(user.id, from, to))
     },
     onError: () => {
       toast.error('Transação inválida.')
     },
+  })
+}
+
+export const useGetAllTransactions = ({ from, to }) => {
+  const { user } = useAuthContext()
+  return useQuery({
+    queryKey: getTransactionsQueryKey(user.id, from, to),
+    queryFn: () => transactionService.getAll({ from, to }),
+    enabled: Boolean(from) && Boolean(to) && Boolean(user.id),
   })
 }
