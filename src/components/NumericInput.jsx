@@ -11,7 +11,7 @@ const NumericInput = forwardRef(({ onChange, ...props }, ref) => {
       getInputRef={ref}
       customInput={Input}
       onValueChange={(values) => {
-        onChange(values.floatValue)
+        onChange(values.floatValue ?? '')
       }}
     />
   )

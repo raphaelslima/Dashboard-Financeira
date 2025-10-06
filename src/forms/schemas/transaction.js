@@ -14,3 +14,7 @@ export const formTransactionSchema = z.object({
     message: 'O campo é obrigatório',
   }),
 })
+
+export const formEditTransaction = formTransactionSchema.extend({
+  id: z.string().uuid(),
+})
