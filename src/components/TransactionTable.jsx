@@ -9,6 +9,7 @@ import { formatToMoneyBR } from '@/helpers/amount'
 import TransactionTypeIcon from './transactionTypeIcon'
 import { Button } from './ui/button'
 import { DataTable } from './ui/dataTable'
+import { ScrollArea } from './ui/scroll-area'
 
 const columns = [
   {
@@ -56,7 +57,14 @@ const TransactionTable = () => {
   const to = searchParams.get('to')
   const { data: transactions } = useGetAllTransactions({ from, to })
   if (!transactions) return null
-  return <DataTable columns={columns} data={transactions} />
+  return (
+    <>
+      <h2 className="text-2xl font-bold">Transações</h2>
+      <ScrollArea className="h-[500px] max-h-[500px] rounded-md border">
+        <DataTable columns={columns} data={transactions} />
+      </ScrollArea>
+    </>
+  )
 }
 
 export default TransactionTable
