@@ -44,7 +44,7 @@ const LoginPage = () => {
             <CardHeader>
               <CardTitle>Faça login</CardTitle>
               <CardDescription>
-                Insira seus dados para entrar na sua conta!
+                Insira seus dados para fazer o login!
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
